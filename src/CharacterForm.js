@@ -384,307 +384,316 @@ function CharacterForm() {
     }
   }, [statGenerationMode, standardArrayAssignments]);  
   
+//  ---------------------------------------------------------------------------------------------------------------------------------------
+//  ---------------------------------------------------------------------------------------------------------------------------------------
+//  ---------------------------------------------------------------------------------------------------------------------------------------
 
   return (
     <div>
       <h3>Character Creator</h3>
-      <form>
-        <label>
-          Name:
-          <input type="text" name="name" value={character.name} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Race:
-          <input type="text" name="race" value={character.race} onChange={handleChange} />
-        </label>
-        <br />
-        <label>
-          Class:
-          <input type="text" name="class" value={character.class} onChange={handleChange} />
-        </label>
-        <br />
-
-        <label>
-          Level:
-          <select
-            name="level"
-            value={level}
-            onChange={(e) => setLevel(Number(e.target.value))}
-          >
-            {Array.from({ length: 20 }, (_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {i + 1}
-              </option>
-            ))}
-          </select>
-        </label>
-        <br />
-
-        <label>
-          Background:
-          <input type="text" name="background" value={character.background} onChange={handleChange} />
-        </label>
-        <br />
-
-        <label>
-          Alignment:
-          <select value={alignment} onChange={(e) => setAlignment(e.target.value)}>
-            <option value="">Select Alignment</option>
-            <option value="Lawful Good">Lawful Good</option>
-            <option value="Neutral Good">Neutral Good</option>
-            <option value="Chaotic Good">Chaotic Good</option>
-            <option value="Lawful Neutral">Lawful Neutral</option>
-            <option value="True Neutral">True Neutral</option>
-            <option value="Chaotic Neutral">Chaotic Neutral</option>
-            <option value="Lawful Evil">Lawful Evil</option>
-            <option value="Neutral Evil">Neutral Evil</option>
-            <option value="Chaotic Evil">Chaotic Evil</option>
-          </select>
-        </label>
-        <br />
-
-        <label>
-          Languages:
-          <select multiple={true} value={languages} onChange={(e) => {
-            const selectedLanguages = Array.from(e.target.selectedOptions, (option) => option.value);
-            setLanguages(selectedLanguages);
-          }}>
-            {languageOptions.map((lang) => (
-              <option key={lang} value={lang}>
-                {lang}
-              </option>
-            ))}
-          </select>
-        </label>
-        <br />
-
-        <label>
-          Experience Points:
-          <input
-            type="number"
-            name="experiencePoints"
-            value={experiencePoints}
-            min="0"
-            onChange={(e) => setExperiencePoints(Number(e.target.value))}
-          />
-        </label>
-        <br />
-
-        <label>
-          Inspiration:
-          <input
-            type="checkbox"
-            checked={inspiration}
-            onChange={(e) => setInspiration(e.target.checked)}
-          />
-        </label>
-        <br /><br></br>
-
-        <label>
-          HP:
-          <input
-            type="number"
-            name="currentHP"
-            value={currentHP}
-            min="0"
-            max={maxHP}
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setCurrentHP(value > maxHP ? maxHP : value);
-            }}
-            style={{ width: '60px', marginRight: '5px' }}
-          />
-          /
-          <input
-            type="number"
-            name="maxHP"
-            value={maxHP}
-            min="1"
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setMaxHP(value);
-              if (currentHP > value) {
-                setCurrentHP(value);
-              }
-            }}
-            style={{ width: '60px', marginLeft: '5px' }}
-          />
-        </label>
-
-        <br />
-        <label>
-          Temporary HP:
-          <input
-            type="number"
-            name="tempHP"
-            value={tempHP}
-            min="0"
-            onChange={(e) => setTempHP(Number(e.target.value))}
-          />
-        </label>
-        <br /><br></br>
-
-        <label>
-          Proficiency Bonus: {calculateProficiencyBonus(level)}
-        </label>
-        <br /><br></br>
-
-        <label>
-          Passive Perception: {passivePerception}
-        </label>
-        <br />
-
-        <h3>
-          Ability Scores ({statGenerationMode === "point-buy"
-            ? "Point Buy"
-            : statGenerationMode === "standard-array"
-            ? "Standard Array"
-            : "Manual Entry"})
-        </h3>
-
-        {statGenerationMode === "point-buy" && (
-          <p style={{ color: remainingPoints < 0 ? "red" : "white" }}>
-            Points Remaining: {remainingPoints}
-          </p>
-        )}
-
-       <label>
-          Stat Generation Method:
-          <select value={statGenerationMode} onChange={(e) => setStatGenerationMode(e.target.value)}>
-            <option value="point-buy">Point Buy</option>
-            <option value="standard-array">Standard Array</option>
-            <option value="manual">Manual / Rolled</option>
-          </select>
-        </label>
-
-        {Object.keys(character.abilityScores).map((stat) => (
-          <label key={stat}>
-            {stat.charAt(0).toUpperCase() + stat.slice(1)}:
-            {statGenerationMode === 'standard-array' ? (
-              <select
-                name={stat}
-                value={standardArrayAssignments[stat]}
-                onChange={handleStandardArrayChange}
-      >
-                <option value="">Select</option>
-                {standardArray.map((score) => {
-                  const isAssigned = Object.entries(standardArrayAssignments).some(
-                    ([assignedStat, assignedValue]) =>
-                      assignedStat !== stat && assignedValue === String(score)
-                  );
-                  return (
-                    <option key={score} value={score} disabled={isAssigned}>
-                      {score}
-                    </option>
-                  );
-                })}
-              </select>
-            ) : (
-              <input
-                type="number"
-                name={stat}
-                value={character.abilityScores[stat]}
-                min={statGenerationMode === 'manual' ? 3 : 8}
-                max={statGenerationMode === 'manual' ? 18 : 15}
-                onChange={handleAbilityChange}
-                disabled={statGenerationMode === 'standard-array'}
-              />
-            )}
+      <form className ="character-grid">
+        <div className="character-info">
+          <label>
+            Name:
+            <input type="text" name="name" value={character.name} onChange={handleChange} />
           </label>
-        ))}
-        <br />
 
-        <h3>Saving Throw Proficiencies</h3>
-        {Object.keys(character.abilityScores).map((stat) => (
-          <label key={stat}>
+          <label>
+            Race:
+            <input type="text" name="race" value={character.race} onChange={handleChange} />
+          </label>
+
+          <label>
+            Class:
+            <input type="text" name="class" value={character.class} onChange={handleChange} />
+          </label>
+
+          <label>
+            Background:
+            <input type="text" name="background" value={character.background} onChange={handleChange} />
+          </label>
+
+          <label>
+            Alignment:
+            <select value={alignment} onChange={(e) => setAlignment(e.target.value)}>
+              <option value="">Select Alignment</option>
+              <option value="Lawful Good">Lawful Good</option>
+              <option value="Neutral Good">Neutral Good</option>
+              <option value="Chaotic Good">Chaotic Good</option>
+              <option value="Lawful Neutral">Lawful Neutral</option>
+              <option value="True Neutral">True Neutral</option>
+              <option value="Chaotic Neutral">Chaotic Neutral</option>
+              <option value="Lawful Evil">Lawful Evil</option>
+              <option value="Neutral Evil">Neutral Evil</option>
+              <option value="Chaotic Evil">Chaotic Evil</option>
+            </select>
+          </label>
+
+          <label>
+            Languages:
+            <select multiple={true} value={languages} onChange={(e) => {
+              const selectedLanguages = Array.from(e.target.selectedOptions, (option) => option.value);
+              setLanguages(selectedLanguages);
+            }}>
+              {languageOptions.map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        
+        <div className="stats-hp-block">
+          <label>
+            Level:
+            <select
+              name="level"
+              value={level}
+              onChange={(e) => setLevel(Number(e.target.value))}
+            >
+              {Array.from({ length: 20 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Experience (XP):
+            <input
+              type="number"
+              name="experiencePoints"
+              value={experiencePoints}
+              min="0"
+              onChange={(e) => setExperiencePoints(Number(e.target.value))}
+            />
+          </label>
+          
+          <div className="saving-meta">
+            <label>Proficiency Bonus: <strong>+{calculateProficiencyBonus(level)}</strong></label>
+            <label>Passive Perception: <strong>{passivePerception}</strong></label>
+          </div>
+
+          <label className="inspiration-checkbox">
+            Inspiration:
             <input
               type="checkbox"
-              value={stat}
-              checked={savingThrowProficiencies.includes(stat)}
-              onChange={handleSavingThrowProficiencyChange}
+              checked={inspiration}
+              onChange={(e) => setInspiration(e.target.checked)}
             />
-            {stat.charAt(0).toUpperCase() + stat.slice(1)}
           </label>
-        ))}
-        <br /><br></br>
 
-        <h3>Saving Throw Modifiers</h3>
-        <ul>
-          {Object.keys(character.abilityScores).map((stat) => {
-            const modifier = getAbilityModifier(character.abilityScores[stat]);
-            const totalModifier = modifier + (savingThrowProficiencies.includes(stat) ? proficiencyBonus : 0);
-            return (
-              <li key={stat}>
-                {stat.charAt(0).toUpperCase() + stat.slice(1)}: {totalModifier >= 0 ? '+' : ''}{totalModifier}
-              </li>
-            );
-          })}
-        </ul>
+          <label>
+            HP:
+            <div className="hp-row">
+              <input
+                type="number"
+                name="currentHP"
+                value={currentHP}
+                min="0"
+                max={maxHP}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setCurrentHP(value > maxHP ? maxHP : value);
+                }}
+              />
+              <span>/</span>
+              <input
+                type="number"
+                name="maxHP"
+                value={maxHP}
+                min="1"
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  setMaxHP(value);
+                  if (currentHP > value) {
+                    setCurrentHP(value);
+                  }
+                }}
+              />
+            </div>
+          </label>
 
-        <label>
-          Armor Class (AC):
-          <input
-            type="number"
-            name="armorClass"
-            value={armorClass}
-            min="0"
-            onChange={(e) => setArmorClass(Number(e.target.value))}
-          />
-        </label>
-        <br />
-        <label>
-          Speed:
-          <input
-            type="number"
-            name="speed"
-            value={speed}
-            min="0"
-            onChange={(e) => setSpeed(Number(e.target.value))}
-          />
-        </label>
-        <br />
-        <label>
-          Initiative:
-          <input
-            type="number"
-            name="initiative"
-            value={initiative}
-            onChange={(e) => setInitiative(Number(e.target.value))}
-          />
-        </label>
-        <br />
+          <label>
+            Temporary HP:
+            <input
+              type="number"
+              name="tempHP"
+              value={tempHP}
+              min="0"
+              onChange={(e) => setTempHP(Number(e.target.value))}
+            />
+          </label>
 
-        <h3>Skills</h3>
-        <label>
-          Select Skills:
-          <select multiple={true} value={character.skills} onChange={handleSkillChange}>
-            {skillOptions.map((skill) => (
-              <option key={skill} value={skill}>
-                {skill}
-              </option>
+          <div className="combat-stats">
+            <label>
+              Armor Class (AC):
+              <input
+                type="number"
+                name="armorClass"
+                value={armorClass}
+                min="0"
+                onChange={(e) => setArmorClass(Number(e.target.value))}
+              />
+            </label>
+
+            <label>
+              Speed:
+              <input
+                type="number"
+                name="speed"
+                value={speed}
+                min="0"
+                onChange={(e) => setSpeed(Number(e.target.value))}
+              />
+            </label>
+
+            <label>
+              Initiative:
+              <input
+                type="number"
+                name="initiative"
+                value={initiative}
+                onChange={(e) => setInitiative(Number(e.target.value))}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="ability-scores-block">
+          <h3>
+            Ability Scores ({statGenerationMode === "point-buy"
+              ? "Point Buy"
+              : statGenerationMode === "standard-array"
+              ? "Standard Array"
+              : "Manual Entry"})
+          </h3>
+
+          {statGenerationMode === "point-buy" && (
+            <p className="points-remaining" style={{ color: remainingPoints < 0 ? "red" : "white" }}>
+              Points Remaining: {remainingPoints}
+            </p>
+          )}
+
+          <label className="generation-mode-select">
+            Stat Generation Method:
+            <select value={statGenerationMode} onChange={(e) => setStatGenerationMode(e.target.value)}>
+              <option value="point-buy">Point Buy</option>
+              <option value="standard-array">Standard Array</option>
+              <option value="manual">Manual / Rolled</option>
+            </select>
+          </label>
+
+          <div className="stats-grid">
+            {Object.keys(character.abilityScores).map((stat) => (
+              <label key={stat}>
+                {stat.charAt(0).toUpperCase() + stat.slice(1)}:
+                {statGenerationMode === 'standard-array' ? (
+                  <select
+                    name={stat}
+                    value={standardArrayAssignments[stat]}
+                    onChange={handleStandardArrayChange}
+                  >
+                    <option value="">Select</option>
+                    {standardArray.map((score) => {
+                      const isAssigned = Object.entries(standardArrayAssignments).some(
+                        ([assignedStat, assignedValue]) =>
+                          assignedStat !== stat && assignedValue === String(score)
+                      );
+                      return (
+                        <option key={score} value={score} disabled={isAssigned}>
+                          {score}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <input
+                    type="number"
+                    name={stat}
+                    value={character.abilityScores[stat]}
+                    min={statGenerationMode === 'manual' ? 3 : 8}
+                    max={statGenerationMode === 'manual' ? 18 : 15}
+                    onChange={handleAbilityChange}
+                    disabled={statGenerationMode === 'standard-array'}
+                  />
+                )}
+              </label>
             ))}
-          </select>
-        </label>
-        <br />
+          </div>
+        </div>
 
-        <h3>Feats</h3>
-        <label>
-          Select Feats:
-          <select multiple={true} value={character.feats} onChange={handleFeatChange}>
-            {featOptions.map((feat) => (
-              <option key={feat} value={feat}>
-                {feat}
-              </option>
+        <div className="saving-throws-block">
+          <h3>Saving Throws</h3>
+
+          <div className="saving-proficiencies">
+            <p>Proficiencies:</p>
+            {Object.keys(character.abilityScores).map((stat) => (
+              <label key={stat} className="checkbox-label">
+                <input
+                  type="checkbox"
+                  value={stat}
+                  checked={savingThrowProficiencies.includes(stat)}
+                  onChange={handleSavingThrowProficiencyChange}
+                />
+                {stat.charAt(0).toUpperCase() + stat.slice(1)}
+              </label>
             ))}
-          </select>
-        </label>
-        <br />
+          </div>
 
-        {/* Save and Load Buttons */}
-        <button type="button" onClick={handleSaveAsJson}>Save as JSON</button>
-        <input type="file" accept=".json" onChange={handleLoadFromJson} />
-        <button type="button" onClick={handleNewCharacter}>New Character (Reset Form)</button>
+          <div className="saving-modifiers">
+            <p>Modifiers:</p>
+            <ul>
+              {Object.keys(character.abilityScores).map((stat) => {
+                const modifier = getAbilityModifier(character.abilityScores[stat]);
+                const totalModifier = modifier + (savingThrowProficiencies.includes(stat) ? proficiencyBonus : 0);
+                return (
+                  <li key={stat}>
+                    {stat.charAt(0).toUpperCase() + stat.slice(1)}: {totalModifier >= 0 ? '+' : ''}{totalModifier}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        <div className="skills-feats-block">
+          <div className="skills-column">
+            <h3>Skills</h3>
+            <label>
+              Select Skills:
+              <select multiple={true} value={character.skills} onChange={handleSkillChange}>
+                {skillOptions.map((skill) => (
+                  <option key={skill} value={skill}>
+                    {skill}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="feats-column">
+            <h3>Feats</h3>
+            <label>
+              Select Feats:
+              <select multiple={true} value={character.feats} onChange={handleFeatChange}>
+                {featOptions.map((feat) => (
+                  <option key={feat} value={feat}>
+                    {feat}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div className="button-block">
+          <button type="button" onClick={handleSaveAsJson}>Save as JSON</button>
+          <input type="file" accept=".json" onChange={handleLoadFromJson} />
+          <button type="button" onClick={handleNewCharacter}>New Character (Reset Form)</button>
+        </div>
 
       </form>
 
