@@ -1,6 +1,6 @@
 // Character data structure
 const characterTemplate = {
-    name: "",  // Character's name
+    name: "",  
     race: "",  // Character's race (Human, Twi'lek, etc.)
     class: "", // Character's class (Jedi, Scoundrel, etc.)
     background: "", // Character’s background (Bounty Hunter, Outlaw, etc.)
