@@ -1,0 +1,250 @@
+/* App.css */
+body {
+  background-color: #2e2e2e;
+  color: rgb(255, 255, 255);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+}
+
+h2, h3 {
+  grid-column: 1 / -1;
+  margin-top: 20px;
+}
+
+input, select, button {
+  padding: 6px;
+  margin-top: 4px;
+  width: 150px;
+  border-radius: 4px;
+  border: none;
+  font-size: 14px;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 1rem;
+}
+
+/* === Character Info Section === */
+.character-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.character-info label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.character-info input,
+.character-info select {
+  padding: 4px 8px;
+  font-size: 1rem;
+  width: 175px;
+  box-sizing: border-box;
+}
+
+/* === Stats & HP Section === */
+.stats-hp-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stats-hp-block label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.inspiration-checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hp-row input {
+  width: 60px;
+}
+
+.ability-scores-block {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 10px;
+  background-color: #1f1f1f;
+}
+
+.generation-mode-select {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.stats-grid label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.points-remaining {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.combat-stats {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.combat-stats label input {
+  width: 60px;
+  margin-left: 0.5rem;
+}
+
+/* === Saving Throws Section === */
+.saving-throws-block {
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+}
+
+.saving-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.saving-proficiencies {
+  margin-bottom: 1rem;
+}
+
+.checkbox-label {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.saving-modifiers ul {
+  list-style: none;
+  padding: 0;
+}
+
+.saving-modifiers li {
+  margin-bottom: 0.3rem;
+}
+
+/* === Skills & Feats Section === */
+.skills-feats-block {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.skills-column,
+.feats-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.skills-column select,
+.feats-column select {
+  height: 150px;
+}
+
+/* === Button Section === */
+.button-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #2c2c2c;
+  border-radius: 8px;
+}
+
+.button-block button,
+.button-block input[type="file"] {
+  padding: 0.4rem 0.8rem;
+  background-color: #3a3a3a;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button-block input[type="file"] {
+  width: 100%;
+  max-width: 250px;
+}
+
+.button-block button:hover,
+.button-block input[type="file"]:hover {
+  background-color: #505050;
+}
+
+.feat-sheet-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.feat-sheet-row {
+  margin-bottom: 0.75rem;
+}
+
+.feat-sheet-row span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.feat-sheet-row .icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.feat-sheet-row .icon-button:hover {
+  color: white;
+}
+
+.feat-sheet-row .feat-description {
+  margin-top: 0.3rem;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #ddd;
+  font-size: 0.95rem;
+}

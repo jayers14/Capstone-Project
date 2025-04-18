@@ -1,0 +1,142 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    position: relative;
+    background-color: #1f1f1f;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    color: white;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    color: #ccc;
+    font-size: 1.2rem;
+    border: none;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  
+  .close-button:hover {
+    color: white;
+    background-color: #444;
+  }  
+  
+  .feat-modal-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+  
+  .feat-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feat-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .feat-label {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .feat-sheet-row {
+    margin-bottom: 0.75rem;
+  }
+  
+  .feat-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }  
+  
+  .icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc;
+    font-size: 1rem;
+    padding: 0;
+    margin-left: 0.75rem;
+  }
+  
+  .icon-button:hover {
+    color: white;
+  }
+  
+  .dropdown-button {
+    font-size: 1.6rem;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ccc;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    margin-left: auto; /* align all to the right */
+  }  
+  
+  .dropdown-button:hover {
+    color: white;
+  }
+
+  .feat-description {
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    margin-top: 0.25rem;
+    margin-left: 2rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #ddd;
+    width: calc(100% - 2rem);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
