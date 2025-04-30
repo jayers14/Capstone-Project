@@ -1,4 +1,3 @@
-/* App.css */
 body {
   background-color: #2e2e2e;
   color: rgb(255, 255, 255);
@@ -6,7 +5,12 @@ body {
   padding: 20px;
 }
 
-h2, h3 {
+h2 {
+text-align: center;
+margin-bottom: 2rem;
+}
+
+h3 {
   grid-column: 1 / -1;
   margin-top: 20px;
 }
@@ -14,17 +18,81 @@ h2, h3 {
 input, select, button {
   padding: 6px;
   margin-top: 4px;
-  width: 150px;
+  width: fit-content;
   border-radius: 4px;
   border: none;
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 .character-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  padding: 1rem;
+  /* grid-template-columns: repeat(3, 1fr); saving this in case of layout revert*/
+  grid-template-columns: 1fr 1fr 1.5fr;
+  grid-template-areas:
+    "info stats stats"
+    "scores skills feats"
+    "equipment equipment equipment"
+    "powers powers powers"
+    "buttons buttons buttons";
+  grid-gap: 1.5rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+@media (max-width: 1024px) {
+  .character-grid {
+    grid-template-areas:
+      "info"
+      "stats"
+      "saves"
+      "skills"
+      "feats"
+      "equipment"
+      "powers"
+      "buttons";
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet-section.character-info {
+  grid-area: info;
+}
+.sheet-section.stats-hp-block {
+  grid-area: stats;
+}
+.sheet-section.saving-throws-block {
+  grid-area: saves;
+}
+.sheet-section.skills-column {
+  grid-area: skills;
+}
+.sheet-section.feats-column {
+  grid-area: feats;
+}
+.sheet-section.equipment-block {
+  grid-area: equipment;
+}
+.features-powers-block {
+  grid-area: powers;
+}
+.button-block {
+  grid-area: buttons;
+}
+
+.sheet-section {
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  padding: 1.2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+.sheet-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.3rem;
 }
 
 /* === Character Info Section === */
@@ -32,6 +100,11 @@ input, select, button {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
+  margin-bottom: 2rem;
 }
 
 .character-info label {
@@ -53,6 +126,10 @@ input, select, button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
   margin-bottom: 2rem;
 }
 
@@ -62,10 +139,9 @@ input, select, button {
   font-weight: bold;
 }
 
-.inspiration-checkbox {
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
+.form-group input[type="checkbox"] {
+  transform: scale(1.4);
+  margin-top: 0.5rem;
 }
 
 .hp-row {
@@ -122,23 +198,59 @@ input, select, button {
   margin-left: 0.5rem;
 }
 
+.stats-row {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0 0 1rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;}
+
+.hp-group {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.small-input {
+  width: 100px;
+}
+
+.tiny-input {
+  width: 60px;
+}
+
+.inspiration-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 /* === Saving Throws Section === */
 .saving-throws-block {
   padding: 1rem;
   background-color: #1f1f1f;
   border: 1px solid #444;
   border-radius: 10px;
-  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
-.saving-meta {
+.saving-throw-grid {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
 }
 
-.saving-proficiencies {
-  margin-bottom: 1rem;
+.saving-throw-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 150px;
 }
 
 .checkbox-label {
@@ -147,13 +259,8 @@ input, select, button {
   margin-bottom: 0.5rem;
 }
 
-.saving-modifiers ul {
-  list-style: none;
-  padding: 0;
-}
-
-.saving-modifiers li {
-  margin-bottom: 0.3rem;
+.saving-mod {
+  font-weight: bold;
 }
 
 /* === Skills & Feats Section === */
@@ -169,11 +276,84 @@ input, select, button {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
+  margin-bottom: 2rem;
 }
 
-.skills-column select,
-.feats-column select {
-  height: 150px;
+.skills-list {
+  margin-top: 0.5rem;
+}
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+  gap: 1rem;
+}
+
+.skill-checkbox-modifier {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 60px;
+}
+
+.skill-checkbox-modifier input[type="checkbox"] {
+  margin: 0;
+  transform: scale(1.2);
+  vertical-align: middle;
+}
+
+.skill-modifier {
+  font-weight: bold;
+  width: 30px;
+  text-align: right;
+}
+
+.skill-name {
+  white-space: nowrap;
+  flex: 1;
+}
+
+.skill-item label {
+  font-weight: normal;
+}
+
+.feat-sheet-list {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.feat-sheet-row {
+  margin-bottom: 0.75rem;
+}
+
+.feat-sheet-row .icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ccc;
+  font-size: 1rem;
+  padding: 0;
+}
+
+.feat-sheet-row .icon-button:hover {
+  color: white;
+}
+
+.feat-sheet-row .feat-description {
+  margin-top: 0.3rem;
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #ddd;
+  font-size: 1rem;
 }
 
 /* === Button Section === */
@@ -207,44 +387,187 @@ input, select, button {
   background-color: #505050;
 }
 
-.feat-sheet-list {
-  list-style: none;
-  padding-left: 0;
+.weapon-row button {
+  width: auto !important;
+  padding: 0.2rem 0.4rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.weapon-row button:hover {
+  color: white;
+  background-color: #333;
+}
+
+/*Equpiment Section*/
+.equipment-block {
+  margin-top:1rem;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
+}
+
+.weapon-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.weapon-header,
+.weapon-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1.5fr 1.5fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.weapon-header {
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.weapon-row input {
+  padding: 4px 8px;
+  font-size: 1rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background-color: #2c2c2c;
+  color: white;
+}
+
+.equipment-textarea {
+  width: 98%;
+  margin-top: 0.1rem;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: .5rem;
+  color: white;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+/* Class Features and Powers Section */
+.features-powers-block {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.features-column,
+.powers-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.features-column button,
+.powers-column button {
   margin-top: 0.5rem;
+  padding: 0.4rem;
+  font-size: 1rem;
+  border: none;
+  background-color: #444;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.feat-sheet-row {
-  margin-bottom: 0.75rem;
+.features-column button:hover,
+.powers-column button:hover {
+  background-color: #666;
 }
 
-.feat-sheet-row span {
+.feature-block {
+  background-color: #2a2a2a;
+  padding: 0.5rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.feature-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  font-weight: 500;
+  background-color: #2a2a2a;
+  padding: 0.4rem;
+  border-radius: 6px;
+  margin-bottom: 0.3rem;
 }
 
-.feat-sheet-row .icon-button {
+.feature-controls {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.feature-title {
+  flex-grow: 1;
+  font-weight: bold;
+  padding: 0 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-button {
   background: none;
   border: none;
-  cursor: pointer;
-  color: #ccc;
   font-size: 1rem;
-  padding: 0;
+  padding: 0.2rem 0.4rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
-.feat-sheet-row .icon-button:hover {
+.delete-button:hover {
+  background-color: #444;
   color: white;
 }
 
-.feat-sheet-row .feat-description {
-  margin-top: 0.3rem;
-  margin-left: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: #1e1e1e;
-  border: 1px solid #444;
-  border-radius: 6px;
-  color: #ddd;
-  font-size: 0.95rem;
+.feature-header button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  padding: 0.1rem 0.2rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  width: fit-content;
 }
+
+.feature-header button:hover {
+  background-color: #555;
+}
+
+.feature-block textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background-color: #2e2e2e;
+  color: white;
+}
+
+
+
+.delete-button:hover {
+  color: #faa;
+}
+
+

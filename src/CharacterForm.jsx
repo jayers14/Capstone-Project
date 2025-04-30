@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getTotalPointBuy } from "./utils/pointbuy";
 import FeatListModal from "./FeatListModal";
 import { featDescriptions } from "./featDescriptions";
+import LanguageListModal from "./LanguageListModal";
 
 const defaultCharacter = {
   name: "",
@@ -18,6 +19,19 @@ const defaultCharacter = {
   },
   skills: [],
   feats: [],
+  weapons: [],
+  equipment: "",
+  classFeatures: [],
+  powers: [],
+  hp: 0,
+  maxHp: 0,
+  tempHp: 0,
+  ac: 10,
+  speed: 0,
+  initiative: 0,
+  inspiration: false,
+  experience: 0,
+  level: 1,
 };
 
 function calculateProficiencyBonus(level) {
@@ -32,8 +46,21 @@ function CharacterForm() {
   //Initialize character state
   const [character, setCharacter] = useState(() => {
     const saved = localStorage.getItem("character");
-    return saved ? JSON.parse(saved) : defaultCharacter;
-  });
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return {
+        ...defaultCharacter,
+        ...parsed,
+        abilityScores: {
+          ...defaultCharacter.abilityScores,
+          ...parsed.abilityScores,
+        },
+        weapons: parsed.weapons || [],
+        equipment: parsed.equipment || "",
+      };
+    }
+    return defaultCharacter;
+  });  
 
   // Initialize statGenerationMode state from localStorage
   const [statGenerationMode, setStatGenerationMode] = useState(() => {
@@ -63,6 +90,33 @@ function CharacterForm() {
   const [maxHP, setMaxHP] = useState(savedCharacter.maxHP || 0);
   const [currentHP, setCurrentHP] = useState(savedCharacter.currentHP || 0);
   const [tempHP, setTempHP] = useState(savedCharacter.tempHP || 0);
+
+  const [expandedFeatures, setExpandedFeatures] = useState([]);
+  const [expandedPowers, setExpandedPowers] = useState([]);
+
+  const toggleFeatureExpansion = (index) => {
+    setExpandedFeatures((prev) =>
+      prev.includes(index)
+        ? prev.filter((i) => i !== index)
+        : [...prev, index]
+    );
+  };
+  
+  const togglePowerExpansion = (index) => {
+    setExpandedPowers((prev) =>
+      prev.includes(index)
+        ? prev.filter((i) => i !== index)
+        : [...prev, index]
+    );
+  };
+  
+  const moveItem = (array, setArray, fromIndex, toIndex) => {
+    if (toIndex < 0 || toIndex >= array.length) return;
+    const newArr = [...array];
+    const [movedItem] = newArr.splice(fromIndex, 1);
+    newArr.splice(toIndex, 0, movedItem);
+    setArray(newArr);
+  };  
 
   const [armorClass, setArmorClass] = useState(() => {
     const savedCharacter = JSON.parse(localStorage.getItem("character"));
@@ -115,6 +169,9 @@ function CharacterForm() {
     return savedCharacter?.languages || [];
   });  
 
+  const [classFeatures, setClassFeatures] = useState(() => savedCharacter.classFeatures || []);
+  const [powers, setPowers] = useState(() => savedCharacter.powers || []);
+
   const wisdomModifier = getAbilityModifier(character.abilityScores.wisdom);
   const proficiencyBonus = calculateProficiencyBonus(level);
   const isProficientInPerception = character.skills.includes("Perception");
@@ -139,22 +196,29 @@ function CharacterForm() {
     "Technology",
   ];
 
-  const featOptions = Object.keys(featDescriptions);
-  // const featOptions = [
-  //   "Force Sensitive",
-  //   "Martial Adept",
-  //   "Sharpshooter",
-  //   "Tough",
-  //   "Weapon Expert",
-  // ];
+  const abilityMap = {
+    Acrobatics: "dexterity",
+    Athletics: "strength",
+    "Animal Handling": "wisdom",
+    Deception: "charisma",
+    Insight: "wisdom",
+    Intimidation: "charisma",
+    Investigation: "intelligence",
+    Lore: "intelligence",
+    Medicine: "wisdom",
+    Perception: "wisdom",
+    Performance: "charisma",
+    Persuasion: "charisma",
+    Piloting: "dexterity",
+    Stealth: "dexterity",
+    Survival: "wisdom",
+    Technology: "intelligence",
+  };  
 
-  // const featDescriptions = {
-  //   "Force Sensitive": "You can feel the Force around you. Gain access to minor force powers.",
-  //   "Martial Adept": "You learn two maneuvers of your choice and gain one superiority die.",
-  //   "Sharpshooter": "Attacking at long range doesn’t impose disadvantage. Your ranged attacks ignore cover.",
-  //   "Tough": "Your hit point maximum increases by an amount equal to twice your level.",
-  //   "Weapon Expert": "You gain proficiency with four weapons of your choice."
-  // };  
+  const featOptions = Object.keys(featDescriptions);
+
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false);
+  const [expandedLanguage, setExpandedLanguage] = useState(null);
 
   const languageOptions = [
     "Binary",
@@ -186,6 +250,37 @@ function CharacterForm() {
     "Zabraki"
   ];  
   
+  const languageDescriptions = {
+    "Binary": "A machine language used by droids and computers. Typically sounds like beeps and whistles.",
+    "Bith": "The native tongue of the Bith species, known for its precision and use in scientific discourse.",
+    "Bothese": "Spoken by the Bothans, this language is sharp and quick, reflecting their cunning nature.",
+    "Catherese": "A growling, guttural language spoken by the Cathar, often punctuated by roars.",
+    "Cerean": "The refined language of the Cereans, featuring long vowel sounds and formal structure.",
+    "Cheunh": "The complex and structured language of the Chiss, used mainly in military and diplomatic contexts.",
+    "Devaronese": "A smooth, flowing language spoken by the Devaronians, known for its persuasive tone.",
+    "Dosh": "A harsh and aggressive language spoken by Trandoshans, full of hissing and growls.",
+    "Durese": "A trade language used across the galaxy, particularly among starship crews and spacers.",
+    "Ewokese": "A tribal, high-pitched language spoken by the Ewoks, full of chirps and exclamations.",
+    "Galactic Basic": "The most commonly spoken language in the galaxy, used by the majority of sentient species.",
+    "Gamorrese": "The grunting and snarling tongue of the Gamorreans, difficult for non-Gamorreans to understand.",
+    "Gungan": "A melodic and informal dialect spoken by the Gungans of Naboo, known for its distinct grammar.",
+    "Huttese": "A common trade and criminal underworld language, often spoken by smugglers and gangsters.",
+    "Ithorese": "A resonant language spoken by the Ithorians, often requiring two mouths to properly articulate.",
+    "Jawaese": "The fast-paced chatter of the Jawas, filled with exclamations and nasal tones.",
+    "Kel Dor": "The breathy, filtered language of the Kel Dor, often muffled by their breathing masks.",
+    "Mon Cal": "A fluid and formal language used by the Mon Calamari, suitable for both diplomacy and science.",
+    "Nautila": "A sonar-like, aquatic language used by the Nautolans, usually spoken underwater.",
+    "Rodese": "The raspy, quick language of the Rodians, often accompanied by expressive body language.",
+    "Shyriiwook": "A roaring and growling language spoken by Wookiees. Understandable to some, but unpronounceable by most non-Wookiees.",
+    "Sith": "An ancient and powerful language associated with dark rituals and the Sith Order.",
+    "Sriluurian": "A clicking, guttural language spoken by the Weequay people of Sriluur.",
+    "Togruti": "A graceful and rhythmic language, often accompanied by subtle body gestures and head-tail movements.",
+    "Tusken": "A harsh, whispered language spoken by the Sand People of Tatooine, rarely understood by outsiders.",
+    "Twi’leki": "A language that blends spoken word with subtle movements of the lekku (head-tails).",
+    "Zabraki": "A firm, direct language used by Zabraks, known for its brevity and impact in communication."
+  };
+    
+
   // Function to Save Character as JSON File
   const handleSaveAsJson = () => {
     const usedPoints = getTotalPointBuy(character);
@@ -209,6 +304,8 @@ function CharacterForm() {
       inspiration,
       alignment,
       languages,
+      classFeatures,
+      powers,
     };
     
     const characterJson = JSON.stringify(characterData, null, 2);
@@ -251,6 +348,8 @@ function CharacterForm() {
         setInspiration(loadedCharacter.inspiration || false);
         setAlignment(loadedCharacter.alignment || "");
         setLanguages(loadedCharacter.languages || []);
+        setClassFeatures(loadedCharacter.classFeatures || []);
+        setPowers(loadedCharacter.powers || []);
 
       } catch (error) {
         alert("Invalid JSON file. Please upload a valid character file.");
@@ -319,6 +418,8 @@ function CharacterForm() {
     setInspiration(false);
     setAlignment('');
     setLanguages([]);
+    setClassFeatures([]);
+    setPowers([]);
   };  
   
   useEffect(() => {
@@ -336,9 +437,11 @@ function CharacterForm() {
       inspiration,
       alignment,
       languages,
+      classFeatures,
+      powers,
     };
     localStorage.setItem("character", JSON.stringify(characterData));
-  }, [character, level, experiencePoints, maxHP, currentHP, tempHP, armorClass, speed, initiative,savingThrowProficiencies, inspiration, alignment, languages]);    
+  }, [character, level, experiencePoints, maxHP, currentHP, tempHP, armorClass, speed, initiative,savingThrowProficiencies, inspiration, alignment, languages, classFeatures, powers]);
 
   const [standardArrayAssignments, setStandardArrayAssignments] = useState({
     strength: '',
@@ -396,10 +499,10 @@ function CharacterForm() {
 
   return (
     <div>
-      <h3>SW5e Character Creator</h3>
+      <h2>SW5e Character Creator</h2>
 
       <form className ="character-grid">
-        <div className="character-info">
+        <div className="sheet-section character-info" style={{ gridArea: "info" }}>
           <label>
             Name:
             <input type="text" name="name" value={character.name} onChange={handleChange} />
@@ -437,140 +540,166 @@ function CharacterForm() {
           </label>
 
 
-          <label>
-            Languages:
-            <select multiple={true} value={languages} onChange={(e) => {
-              const selectedLanguages = Array.from(e.target.selectedOptions, (option) => option.value);
-              setLanguages(selectedLanguages);
-            }}>
-              {languageOptions.map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-        
-        <div className="stats-hp-block">
-          <label>
-            Level:
-            <select
-              name="level"
-              value={level}
-              onChange={(e) => setLevel(Number(e.target.value))}
-            >
-              {Array.from({ length: 20 }, (_, i) => (
-                <option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="languages-column">
+            <h3>Languages</h3>
 
-          <label>
-            Experience (XP):
-            <input
-              type="number"
-              name="experiencePoints"
-              value={experiencePoints}
-              min="0"
-              onChange={(e) => setExperiencePoints(Number(e.target.value))}
-            />
-          </label>
-          
-          <div className="saving-meta">
-            <label>Proficiency Bonus: <strong>+{calculateProficiencyBonus(level)}</strong></label>
-            <label>Passive Perception: <strong>{passivePerception}</strong></label>
+            <ul className="language-sheet-list">
+              {languages.length === 0 && <li>No languages selected</li>}
+              {languages.map((lang, index) => (
+                <li key={index} className="language-sheet-row">
+                  <div className="language-sheet-header">
+                    <span className="language-label">
+                      {lang}
+                      {languageDescriptions[lang] && (
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() =>
+                            setExpandedLanguage(expandedLanguage === lang ? null : lang)
+                          }
+                          aria-label={`View description for ${lang}`}
+                        >
+                          📄
+                        </button>
+                      )}
+                    </span>
+                  </div>
+
+                  {expandedLanguage === lang && (
+                    <div className="language-description">{languageDescriptions[lang]}</div>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            <button type="button" onClick={() => setIsLanguageModalOpen(true)}>
+              Browse Languages
+            </button>
           </div>
 
-          <label className="inspiration-checkbox">
-            Inspiration:
-            <input
-              type="checkbox"
-              checked={inspiration}
-              onChange={(e) => setInspiration(e.target.checked)}
-            />
-          </label>
+        </div>
+        
+        <div className="sheet-section stats-hp-block" style={{ gridArea: "stats" }}>
+          <div className="stats-row">
+            <div className="form-group">
+              <label>Level:</label>
+              <select name="level" value={character.level} onChange={handleChange}>
+                {Array.from({ length: 20 }, (_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <label>
-            HP:
-            <div className="hp-row">
+            <div className="form-group">
+              <label>Experience (XP):</label>
               <input
                 type="number"
-                name="currentHP"
-                value={currentHP}
-                min="0"
-                max={maxHP}
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setCurrentHP(value > maxHP ? maxHP : value);
-                }}
-              />
-              <span>/</span>
-              <input
-                type="number"
-                name="maxHP"
-                value={maxHP}
-                min="1"
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setMaxHP(value);
-                  if (currentHP > value) {
-                    setCurrentHP(value);
-                  }
-                }}
+                name="experience"
+                value={character.experience}
+                onChange={handleChange}
+                className="small-input"
               />
             </div>
-          </label>
 
-          <label>
-            Temporary HP:
-            <input
-              type="number"
-              name="tempHP"
-              value={tempHP}
-              min="0"
-              onChange={(e) => setTempHP(Number(e.target.value))}
-            />
-          </label>
+            <div className="form-group inspiration-box">
+              <label>Inspiration:</label>
+              <input
+                type="checkbox"
+                name="inspiration"
+                checked={character.inspiration}
+                onChange={(e) =>
+                  setCharacter({ ...character, inspiration: e.target.checked })
+                }
+              />
+            </div>
+          </div>
 
-          <div className="combat-stats">
-            <label>
-              Armor Class (AC):
+          <div className="stats-row">
+            <div className="form-group">
+              <label>Proficiency Bonus:</label>
+              <div>+{proficiencyBonus}</div>
+            </div>
+
+            <div className="form-group">
+              <label>Passive Perception:</label>
+              <div>{10 + getAbilityModifier(character.abilityScores["wisdom"]) + (character.skills.includes("Perception") ? proficiencyBonus : 0)}</div>
+            </div>
+          </div>
+
+          <div className="stats-row">
+            <div className="form-group hp-group">
+              <label>HP:</label>
+              <div className="hp-inputs">
               <input
                 type="number"
-                name="armorClass"
-                value={armorClass}
-                min="0"
-                onChange={(e) => setArmorClass(Number(e.target.value))}
+                name="hp"
+                value={character.hp}
+                onChange={handleChange}
+                className="tiny-input"
               />
-            </label>
+              <span> / </span>
+              <input
+                type="number"
+                name="maxHp"
+                value={character.maxHp}
+                onChange={handleChange}
+                className="tiny-input"
+              />
+              </div>
+            </div>
 
-            <label>
-              Speed:
+            <div className="form-group">
+              <label>Temporary HP:</label>
+              <input
+                type="number"
+                name="tempHp"
+                value={character.tempHp}
+                onChange={handleChange}
+                className="tiny-input"
+              />
+            </div>
+          </div>
+
+          <div className="stats-row">
+            <div className="form-group">
+              <label>Armor Class (AC):</label>
+              <input
+                type="number"
+                name="ac"
+                value={character.ac}
+                onChange={handleChange}
+                className="tiny-input"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Speed:</label>
               <input
                 type="number"
                 name="speed"
-                value={speed}
-                min="0"
-                onChange={(e) => setSpeed(Number(e.target.value))}
+                value={character.speed}
+                onChange={handleChange}
+                className="tiny-input"
               />
-            </label>
+            </div>
 
-            <label>
-              Initiative:
+            <div className="form-group">
+              <label>Initiative:</label>
               <input
                 type="number"
                 name="initiative"
-                value={initiative}
-                onChange={(e) => setInitiative(Number(e.target.value))}
+                value={character.initiative}
+                onChange={handleChange}
+                className="tiny-input"
               />
-            </label>
+            </div>
           </div>
         </div>
 
-        <div className="ability-scores-block">
+
+        <div className="sheet-section ability-scores-block" style={{ gridArea: "scores" }}>
           <h3>
             Ability Scores ({statGenerationMode === "point-buy"
               ? "Point Buy"
@@ -631,91 +760,270 @@ function CharacterForm() {
               </label>
             ))}
           </div>
-        </div>
 
-        <div className="saving-throws-block">
-          <h3>Saving Throws</h3>
-
-          <div className="saving-proficiencies">
-            <p>Proficiencies:</p>
-            {Object.keys(character.abilityScores).map((stat) => (
-              <label key={stat} className="checkbox-label">
-                <input
-                  type="checkbox"
-                  value={stat}
-                  checked={savingThrowProficiencies.includes(stat)}
-                  onChange={handleSavingThrowProficiencyChange}
-                />
-                {stat.charAt(0).toUpperCase() + stat.slice(1)}
-              </label>
-            ))}
-          </div>
-
-          <div className="saving-modifiers">
-            <p>Modifiers:</p>
-            <ul>
+            <div className="sheet-section saving-throws-block">
+            <h3>Saving Throws</h3>
+            <div className="saving-throw-grid">
               {Object.keys(character.abilityScores).map((stat) => {
-                const modifier = getAbilityModifier(character.abilityScores[stat]);
-                const totalModifier = modifier + (savingThrowProficiencies.includes(stat) ? proficiencyBonus : 0);
+                const mod = getAbilityModifier(character.abilityScores[stat]);
+                const isProf = savingThrowProficiencies.includes(stat);
+                const total = mod + (isProf ? proficiencyBonus : 0);
                 return (
-                  <li key={stat}>
-                    {stat.charAt(0).toUpperCase() + stat.slice(1)}: {totalModifier >= 0 ? '+' : ''}{totalModifier}
-                  </li>
+                  <div key={stat} className="saving-throw-row">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={isProf}
+                        onChange={(e) => handleSavingThrowProficiencyChange(e)}
+                        value={stat}
+                      />
+                      {stat.charAt(0).toUpperCase() + stat.slice(1)}
+                    </label>
+                    <span className="saving-mod">{total >= 0 ? `+${total}` : total}</span>
+                  </div>
                 );
               })}
-            </ul>
+            </div>
           </div>
         </div>
 
-        <div className="skills-feats-block">
-          <div className="skills-column">
-            <h3>Skills</h3>
-            <label>
-              Select Skills:
-              <select multiple={true} value={character.skills} onChange={handleSkillChange}>
-                {skillOptions.map((skill) => (
-                  <option key={skill} value={skill}>
-                    {skill}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+        <div className="sheet-section skills-column" style={{ gridArea: "skills" }}>
+          <h3>Skills</h3>
+          <div className="skills-list">
+            {skillOptions.map((skill) => {
+              const ability = abilityMap[skill];
+              const modifier = getAbilityModifier(character.abilityScores[ability]);
+              const total = modifier + (character.skills.includes(skill) ? proficiencyBonus : 0);
+              const isProficient = character.skills.includes(skill);
 
-          <div className="feats-column">
-            <h3>Feats</h3>
-
-            <ul className="feat-sheet-list">
-              {character.feats.length === 0 && <li>No feats selected</li>}
-              {character.feats.map((feat, index) => (
-                <li key={index} className="feat-sheet-row">
-                  <div className="feat-sheet-header">
-                    <span className="feat-label">{feat}</span>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      onClick={() =>
-                        setExpandedFeatSheet(expandedFeatSheet === feat ? null : feat)
-                      }
-                      aria-label={`View description for ${feat}`}
-                    >
-                      📄
-                    </button>
+              return (
+                <div key={skill} className="skill-row">
+                  <div className="skill-checkbox-modifier">
+                    <input
+                      type="checkbox"
+                      checked={isProficient}
+                      onChange={() => {
+                        setCharacter((prev) => {
+                          const updatedSkills = isProficient
+                            ? prev.skills.filter((s) => s !== skill)
+                            : [...prev.skills, skill];
+                          return { ...prev, skills: updatedSkills };
+                        });
+                      }}
+                    />
+                    <span className="skill-modifier">{total >= 0 ? `+${total}` : total}</span>
                   </div>
-                  {expandedFeatSheet === feat && (
-                    <div className="feat-description">{featDescriptions[feat]}</div>
-                  )}
-                </li>
-              ))}
-            </ul>
+                  <span className="skill-name">
+                    {skill} ({ability.charAt(0).toUpperCase() + ability.slice(1)})
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-            <button type="button" onClick={() => setIsFeatModalOpen(true)}>
-              Browse Feats
+        <div className="sheet-section feats-column" style={{ gridArea: "feats" }}>
+          <h3>Feats</h3>
+
+          <ul className="feat-sheet-list">
+            {character.feats.length === 0 && <li>No feats selected</li>}
+            {character.feats.map((feat, index) => (
+              <li key={index} className="feat-sheet-row">
+                <div className="feat-sheet-header">
+                  <span className="feat-label">{feat}</span>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={() =>
+                      setExpandedFeatSheet(expandedFeatSheet === feat ? null : feat)
+                    }
+                    aria-label={`View description for ${feat}`}
+                  >
+                    📄
+                  </button>
+                </div>
+                {expandedFeatSheet === feat && (
+                  <div className="feat-description">{featDescriptions[feat]}</div>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          <button type="button" onClick={() => setIsFeatModalOpen(true)}>
+            Browse Feats
+          </button>
+        </div>
+
+        <div className="sheet-section equipment-block" style={{ gridArea: "equipment" }}>
+          <h3>Weapons & Damage</h3>
+          <div className="weapon-table">
+            <div className="weapon-header">
+              <span>Name</span>
+              <span>Atk Bonus / DC</span>
+              <span>Damage & Type</span>
+              <span>Notes</span>
+            </div>
+
+            {character.weapons.map((weapon, index) => (
+              <div key={index} className="weapon-row">
+                <input
+                  type="text"
+                  value={weapon.name}
+                  onChange={(e) => {
+                    const updated = [...character.weapons];
+                    updated[index].name = e.target.value;
+                    setCharacter({ ...character, weapons: updated });
+                  }}
+                  placeholder="Name"
+                />
+                <input
+                  type="text"
+                  value={weapon.attackBonus}
+                  onChange={(e) => {
+                    const updated = [...character.weapons];
+                    updated[index].attackBonus = e.target.value;
+                    setCharacter({ ...character, weapons: updated });
+                  }}
+                  placeholder="+X / DC Y"
+                />
+                <input
+                  type="text"
+                  value={weapon.damage}
+                  onChange={(e) => {
+                    const updated = [...character.weapons];
+                    updated[index].damage = e.target.value;
+                    setCharacter({ ...character, weapons: updated });
+                  }}
+                  placeholder="e.g. 2d8 kinetic"
+                />
+                <input
+                  type="text"
+                  value={weapon.notes}
+                  onChange={(e) => {
+                    const updated = [...character.weapons];
+                    updated[index].notes = e.target.value;
+                    setCharacter({ ...character, weapons: updated });
+                  }}
+                  placeholder="Notes"
+                />
+                <button type="button" className="delete-button" onClick={() => {
+                  const updated = character.weapons.filter((_, i) => i !== index);
+                  setCharacter({ ...character, weapons: updated });
+                }}>❌</button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() =>
+                setCharacter({
+                  ...character,
+                  weapons: [...character.weapons, { name: "", attackBonus: "", damage: "", notes: "" }],
+                })
+              }
+            >
+              ➕ Add Weapon
             </button>
           </div>
+
+          <h3>Equipment & Notes</h3>
+          <textarea
+            value={character.equipment}
+            onChange={(e) => setCharacter({ ...character, equipment: e.target.value })}
+            placeholder="List your armor, tools, consumables, etc."
+            rows={4}
+            className="equipment-textarea"
+          />
         </div>
 
-        <div className="button-block">
+        <div className="features-powers-block">
+          <div className="sheet-section features-column">
+            <h3>Class Features</h3>
+            {classFeatures.map((feature, index) => {
+              const isExpanded = expandedFeatures.includes(index);
+              const displayText = feature.split("\n")[0]; // First line as title
+
+              return (
+                <div key={index} className="feature-block">
+                  <div className="feature-header">
+                    <div className="feature-controls">
+                      <button type="button" onClick={() => moveItem(classFeatures, setClassFeatures, index, index - 1)}>🔼</button>
+                      <button type="button" onClick={() => moveItem(classFeatures, setClassFeatures, index, index + 1)}>🔽</button>
+                      <button type="button" onClick={() => toggleFeatureExpansion(index)}>
+                        {isExpanded ? "−" : "+"}
+                      </button>
+                    </div>
+                    <span className="feature-title">{isExpanded ? "Expanded" : displayText || "Untitled"}</span>
+                    <button className="delete-button" type="button" onClick={(e) => {
+                      e.preventDefault();
+                      const updated = [...classFeatures];
+                      updated.splice(index, 1);
+                      setClassFeatures(updated);
+                    }}>❌</button>
+                  </div>
+                  {isExpanded && (
+                    <textarea
+                      value={feature}
+                      onChange={(e) => {
+                        const updated = [...classFeatures];
+                        updated[index] = e.target.value;
+                        setClassFeatures(updated);
+                      }}
+                      rows={5}
+                      placeholder="Enter full feature description..."
+                    />
+                  )}
+                </div>
+              );
+            })}
+            <button type="button" onClick={() => setClassFeatures([...classFeatures, ""])}>Add Feature</button>
+          </div>
+
+          <div className="sheet-section powers-column" style={{ gridArea: "powers" }}>
+            <h3>Powers</h3>
+            {powers.map((power, index) => {
+              const isExpanded = expandedPowers.includes(index);
+              const displayText = power.split("\n")[0];
+
+              return (
+                <div key={index} className="feature-block">
+                  <div className="feature-header">
+                    <div className="feature-controls">
+                      <button type="button" onClick={() => moveItem(powers, setPowers, index, index - 1)}>🔼</button>
+                      <button type="button" onClick={() => moveItem(powers, setPowers, index, index + 1)}>🔽</button>
+                      <button type="button" onClick={() => togglePowerExpansion(index)}>
+                        {isExpanded ? "−" : "+"}
+                      </button>
+                    </div>
+                    <span className="feature-title">{isExpanded ? "Expanded" : displayText || "Untitled"}</span>
+                    <button className="delete-button" type="button" onClick={(e) => {
+                      e.preventDefault();
+                      const updated = [...powers];
+                      updated.splice(index, 1);
+                      setPowers(updated);
+                    }}>❌</button>
+                  </div>
+
+                  {isExpanded && (
+                    <textarea
+                      value={power}
+                      onChange={(e) => {
+                        const updated = [...powers];
+                        updated[index] = e.target.value;
+                        setPowers(updated);
+                      }}
+                      rows={5}
+                      placeholder="Enter full power description..."
+                    />
+                  )}
+                </div>
+              );
+            })}
+            <button type="button" onClick={() => setPowers([...powers, ""])}>Add Power</button>
+          </div>
+        </div>
+
+        <div className="sheet-section button-block" style={{ gridArea: "buttons" }}>
           <button type="button" onClick={handleSaveAsJson}>Save as JSON</button>
           <input type="file" accept=".json" onChange={handleLoadFromJson} />
           <button type="button" onClick={handleNewCharacter}>New Character (Reset Form)</button>
@@ -732,6 +1040,17 @@ function CharacterForm() {
         expandedFeat={expandedFeatModal}
         setExpandedFeat={setExpandedFeatModal}
         featDescriptions={featDescriptions}
+      />
+
+      <LanguageListModal
+        isOpen={isLanguageModalOpen}
+        onClose={() => setIsLanguageModalOpen(false)}
+        languageOptions={languageOptions}
+        selectedLanguages={languages}
+        setSelectedLanguages={setLanguages}
+        expandedLanguage={expandedLanguage}
+        setExpandedLanguage={setExpandedLanguage}
+        languageDescriptions={languageDescriptions}
       />
 
     </div>
