@@ -173,7 +173,7 @@ function CharacterForm() {
   const [powers, setPowers] = useState(() => savedCharacter.powers || []);
 
   const wisdomModifier = getAbilityModifier(character.abilityScores.wisdom);
-  const proficiencyBonus = calculateProficiencyBonus(level);
+  const proficiencyBonus = calculateProficiencyBonus(character.level);
   const isProficientInPerception = character.skills.includes("Perception");
   const passivePerception = 10 + wisdomModifier + (isProficientInPerception ? proficiencyBonus : 0);
 
@@ -624,7 +624,7 @@ function CharacterForm() {
 
             <div className="form-group">
               <label>Passive Perception:</label>
-              <div>{10 + getAbilityModifier(character.abilityScores["wisdom"]) + (character.skills.includes("Perception") ? proficiencyBonus : 0)}</div>
+              <div>{passivePerception}</div>
             </div>
           </div>
 
@@ -747,15 +747,21 @@ function CharacterForm() {
                     })}
                   </select>
                 ) : (
-                  <input
-                    type="number"
-                    name={stat}
-                    value={character.abilityScores[stat]}
-                    min={statGenerationMode === 'manual' ? 3 : 8}
-                    max={statGenerationMode === 'manual' ? 18 : 15}
-                    onChange={handleAbilityChange}
-                    disabled={statGenerationMode === 'standard-array'}
-                  />
+                  <>
+                    <input
+                      type="number"
+                      name={stat}
+                      value={character.abilityScores[stat]}
+                      min={statGenerationMode === 'manual' ? 3 : 8}
+                      max={statGenerationMode === 'manual' ? 18 : 15}
+                      onChange={handleAbilityChange}
+                      disabled={statGenerationMode === 'standard-array'}
+                    />
+                      <span className="modifier-display">
+                        ({getAbilityModifier(character.abilityScores[stat]) >= 0 ? '+' : ''}
+                        {getAbilityModifier(character.abilityScores[stat])})
+                    </span>
+                  </>
                 )}
               </label>
             ))}
