@@ -6,7 +6,7 @@ import LanguageListModal from "./LanguageListModal";
 
 const defaultCharacter = {
   name: "",
-  race: "",
+  species: "",
   class: "",
   background: "",
   abilityScores: {
@@ -447,15 +447,24 @@ function CharacterForm() {
     localStorage.setItem("character", JSON.stringify(characterData));
   }, [character, level, experiencePoints, maxHP, currentHP, tempHP, armorClass, speed, initiative,savingThrowProficiencies, inspiration, alignment, languages, classFeatures, powers]);
 
-  const [standardArrayAssignments, setStandardArrayAssignments] = useState({
-    strength: '',
-    dexterity: '',
-    constitution: '',
-    intelligence: '',
-    wisdom: '',
-    charisma: '',
-  });
+  const [standardArrayAssignments, setStandardArrayAssignments] = useState(() => {
+    const saved = localStorage.getItem("standardArrayAssignments");
+    return saved
+      ? JSON.parse(saved)
+      : {
+          strength: '',
+          dexterity: '',
+          constitution: '',
+          intelligence: '',
+          wisdom: '',
+          charisma: '',
+        };
+  });  
   
+  useEffect(() => {
+    localStorage.setItem("standardArrayAssignments", JSON.stringify(standardArrayAssignments));
+  }, [standardArrayAssignments]);  
+
   const handleStandardArrayChange = (event) => {
     const { name, value } = event.target;
     setStandardArrayAssignments((prev) => {
@@ -482,19 +491,7 @@ function CharacterForm() {
           abilityScores: newAbilityScores,
         }));
       }
-    } else if (statGenerationMode === 'manual') {
-      setCharacter((prev) => ({
-        ...prev,
-        abilityScores: {
-          strength: 8,
-          dexterity: 8,
-          constitution: 8,
-          intelligence: 8,
-          wisdom: 8,
-          charisma: 8,
-        },
-      }));
-    }
+    } 
   }, [statGenerationMode, standardArrayAssignments]);  
 
 //  ---------------------------------------------------------------------------------------------------------------------------------------
@@ -513,8 +510,8 @@ function CharacterForm() {
           </label>
 
           <label>
-            Race:
-            <input type="text" name="race" value={character.race} onChange={handleChange} />
+            Species:
+            <input type="text" name="species" value={character.species} onChange={handleChange} />
           </label>
 
           <label>
