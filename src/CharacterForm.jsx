@@ -91,6 +91,8 @@ function CharacterForm() {
   const [currentHP, setCurrentHP] = useState(savedCharacter.currentHP || 0);
   const [tempHP, setTempHP] = useState(savedCharacter.tempHP || 0);
 
+  const [showStatGeneration, setShowStatGeneration] = useState(false);
+
   const [expandedFeatures, setExpandedFeatures] = useState([]);
   const [expandedPowers, setExpandedPowers] = useState([]);
 
@@ -283,10 +285,12 @@ function CharacterForm() {
 
   // Function to Save Character as JSON File
   const handleSaveAsJson = () => {
-    const usedPoints = getTotalPointBuy(character);
-    if (usedPoints > 27) {
-      alert("You have exceeded the 27-point limit. Please adjust your ability scores before saving.");
-      return; // prevent saving
+    if (statGenerationMode === 'point-buy') {
+      const usedPoints = getTotalPointBuy(character);
+      if (usedPoints > 27) {
+        alert("You have exceeded the 27-point limit. Please adjust your ability scores before saving.");
+        return; // prevent saving
+      }
     }
     
     const characterData = {
@@ -706,22 +710,34 @@ function CharacterForm() {
               : statGenerationMode === "standard-array"
               ? "Standard Array"
               : "Manual Entry"})
+
+            <button
+              type="button"
+              className="stat-toggle-button"
+              onClick={() => setShowStatGeneration(!showStatGeneration)}
+              >
+              {showStatGeneration ? '⏵' : '⏷'}
+            </button>
           </h3>
 
-          {statGenerationMode === "point-buy" && (
-            <p className="points-remaining" style={{ color: remainingPoints < 0 ? "red" : "white" }}>
-              Points Remaining: {remainingPoints}
-            </p>
-          )}
+          {showStatGeneration && (
+            <>
+              {statGenerationMode === "point-buy" && (
+                <p className="points-remaining" style={{ color: remainingPoints < 0 ? "red" : "white" }}>
+                  Points Remaining: {remainingPoints}
+                </p>
+              )}
 
-          <label className="generation-mode-select">
-            Stat Generation Method:
-            <select value={statGenerationMode} onChange={(e) => setStatGenerationMode(e.target.value)}>
-              <option value="point-buy">Point Buy</option>
-              <option value="standard-array">Standard Array</option>
-              <option value="manual">Manual / Rolled</option>
-            </select>
-          </label>
+              <label className="generation-mode-select">
+                Stat Generation Method:
+                <select value={statGenerationMode} onChange={(e) => setStatGenerationMode(e.target.value)}>
+                  <option value="point-buy">Point Buy</option>
+                  <option value="standard-array">Standard Array</option>
+                  <option value="manual">Manual / Rolled</option>
+                </select>
+              </label>
+            </>
+          )}
 
           <div className="stats-grid">
             {Object.keys(character.abilityScores).map((stat) => (

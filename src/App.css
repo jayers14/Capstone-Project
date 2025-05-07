@@ -206,6 +206,19 @@ input, select, button {
   align-items: flex-start;
 }
 
+.stat-toggle-button {
+  margin-bottom: 0.5rem;
+  background-color: #333;
+  color: #ccc;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.stat-toggle-button:hover:hover {
+  background-color: #444;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
